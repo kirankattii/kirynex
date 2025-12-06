@@ -1,7 +1,14 @@
+"use client";
+
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
+import { useProjectModal } from '@/hooks/useProjectModal';
 
 export const HeroSection: React.FC = () => {
+  const { openModal } = useProjectModal();
+  const router = useRouter();
+
   return (
     <section className="relative w-full h-screen overflow-hidden flex items-center justify-center">
       {/* Background Image with Overlay */}
@@ -35,9 +42,9 @@ export const HeroSection: React.FC = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button variant="primary">Start Your Project</Button>
-          <Button variant="outline" className="text-white border-white hover:bg-white hover:text-slate-900">
-            View Our Work
+          <Button variant="primary" onClick={openModal}>Start Your Project</Button>
+          <Button variant="outline" className="text-white border-white hover:bg-white hover:text-slate-900" onClick={() => router.push('/work-flow')}>
+            View Our Work Flow
           </Button>
         </div>
       </div>

@@ -1,9 +1,11 @@
 import { Marquee } from "@/components/animations/Marquee";
 import { HeroSection } from "./components/HeroSection";
-import { OurServiceSection } from "./components/OurServiceSection";
+import OurServiceSection from "./components/OurServiceSection";
 import { GallarySection } from "./components/GallarySection";
 import { AIInteractiveSection } from "./components/AiInterativeSection";
 import { TestimonialSection } from "./components/TestimonialSection";
+import DigitalSection from "./components/DigitalSection";
+import MobileAnimations from "./components/MobileAnimations";
 export default function Home() {
   return (
    <section>
@@ -12,6 +14,8 @@ export default function Home() {
     <OurServiceSection />
     <GallarySection />
     <AIInteractiveSection />
+    <MobileAnimations />
+    <DigitalSection />
     <TestimonialSection />
    </section>
   );

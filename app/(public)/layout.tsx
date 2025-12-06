@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "../../app/globals.css";
 import Navbar from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import Footer from "@/components/layout/Footer";
+import { ProjectModalProvider } from "@/hooks/useProjectModal";
+import { ProjectInquiryModal } from "@/components/ui/ProjectInquiryModal";
+import { ProjectModalWrapper } from "@/components/ui/ProjectModalWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +37,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
-        <Navbar />
-        {children}
-        <Footer />
+        <ProjectModalProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <ProjectModalWrapper />
+        </ProjectModalProvider>
       </body>
     </html>
   );

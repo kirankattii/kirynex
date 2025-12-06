@@ -1,41 +1,7 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Cpu } from 'lucide-react';
-
-// Animation Helper
-const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const domRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) setIsVisible(true);
-      });
-    }, { threshold: 0.1 });
-
-    const currentRef = domRef.current;
-    if (currentRef) observer.observe(currentRef);
-
-    return () => {
-      if (currentRef) observer.unobserve(currentRef);
-    };
-  }, []);
-
-  return (
-    <div
-      ref={domRef}
-      className={`transition-all duration-1000 cubic-bezier(0.16, 1, 0.3, 1) ${className}`}
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
-        transitionDelay: `${delay}ms`
-      }}
-    >
-      {children}
-    </div>
-  );
-};
+import { FadeIn } from '@/components/animations/FadeIn';
 
 export  const TestimonialSection = () => {
   return (
@@ -57,8 +23,8 @@ export  const TestimonialSection = () => {
                 <img src="https://i.pravatar.cc/150?img=11" alt="CEO" className="w-full h-full object-cover" />
              </div>
              <div>
-               <p className="font-bold text-lg text-slate-900">Alex Visser</p>
-               <p className="text-slate-500">CEO, Structureless</p>
+               <p className="font-bold text-lg text-slate-900">Karthik</p>
+               <p className="text-slate-500">CEO, Kirynex</p>
              </div>
            </div>
          </FadeIn>

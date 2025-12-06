@@ -9,38 +9,13 @@ import {
 /**
  * UTILITY & HOOKS
  */
-
-function useOnScreen(ref: React.RefObject<HTMLDivElement | null>, rootMargin = "0px") {
-  const [isIntersecting, setIntersecting] = useState(false);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIntersecting(true);
-      },
-      { rootMargin }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [ref, rootMargin]);
-  return isIntersecting;
-}
+import { FadeIn } from '@/components/animations/FadeIn';
 
 const RevealOnScroll = ({ children, className = "", delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const isVisible = useOnScreen(ref, "-30px");
-  console.log(isVisible);
   return (
-    <div
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms`, transitionDuration: '1000ms' }}
-      className={`transition-all cubic-bezier(0.16, 1, 0.3, 1) transform ${
-        isVisible 
-          ? "opacity-100 translate-y-0 blur-0" 
-          : "opacity-0 translate-y-12 blur-sm"
-      } ${className}`}
-    >
+    <FadeIn delay={delay} className={className}>
       {children}
-    </div>
+    </FadeIn>
   );
 };
 
@@ -65,12 +40,12 @@ export  const AIInteractiveSection = () => {
       setLoadingText(texts[i]);
       i++;
       if (i >= texts.length) i = 0;
-    }, 600);
+    }, 300);
 
     setTimeout(() => {
       clearInterval(interval);
       setStep(2 as const);
-    }, 2800);
+    }, 1500);
   };
 
   const handleDownloadPDF = () => {
@@ -80,7 +55,7 @@ export  const AIInteractiveSection = () => {
       setIsDownloading(false as const);
       // In a real app, this would trigger a file download
       alert("Proposal PDF downloaded successfully!");
-    }, 1500);
+    }, 800);
   };
 
   return (
@@ -126,7 +101,7 @@ export  const AIInteractiveSection = () => {
 
           {/* Right Column: Interactive Widget */}
           <div className="lg:col-span-8 w-full">
-            <RevealOnScroll delay={200}>
+            <RevealOnScroll delay={50}>
               <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] shadow-2xl shadow-slate-200/50 border border-slate-200 overflow-hidden relative min-h-[450px] md:min-h-[550px] transition-all duration-500 ring-1 ring-slate-100 flex flex-col">
                 
                 {/* STATE 0: Input */}

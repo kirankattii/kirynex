@@ -10,6 +10,10 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { MagneticButton, MagneticButton as MagneticButtonUI } from '@/components/ui/MagnaticButton';
+import { FadeIn } from '@/components/animations/FadeIn';
+import { Badge } from '@/components/ui/Badge';
+import { BackgroundBlob } from '@/components/ui/BackgroundBlob';
+import { useOnScreen } from '@/hooks/useOnScreen';
 
 
 /* --- TYPES & INTERFACES --- */
@@ -25,11 +29,7 @@ interface IntersectionObserverOptions {
   rootMargin?: string;
 }
 
-interface FadeInProps {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}
+// Using shared FadeIn component - interface removed
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -79,38 +79,7 @@ const useMousePosition = (): MousePosition => {
 };
 
 
-/* Intersection Observer */
-const useOnScreen = (options: IntersectionObserverOptions): [React.RefObject<HTMLDivElement | null>, boolean] => {
- const ref = useRef<HTMLDivElement | null>(null);
- const [isVisible, setIsVisible] = useState<boolean>(false);
- useEffect(() => {
-   const observer = new IntersectionObserver(([entry]) => {
-     if (entry.isIntersecting) {
-       setIsVisible(true);
-       observer.unobserve(entry.target);
-     }
-   }, options);
-   if (ref.current) observer.observe(ref.current);
-   return () => { if (ref.current) observer.unobserve(ref.current); };
- }, [ref, options]);
- return [ref, isVisible];
-};
-
-
-const FadeIn: React.FC<FadeInProps> = ({ children, delay = 0, className = "" }) => {
- const [ref, isVisible] = useOnScreen({ threshold: 0.1 });
- return (
-   <div
-     ref={ref as React.RefObject<HTMLDivElement>}
-     style={{ transitionDelay: `${delay}ms` }}
-     className={`transition-all duration-1000 ease-[0.19,1,0.22,1] transform ${
-       isVisible ? "opacity-100 translate-y-0 filter-none" : "opacity-0 translate-y-12 blur-lg"
-     } ${className}`}
-   >
-     {children}
-   </div>
- );
-};
+/* Using shared useOnScreen hook and FadeIn component */
 
 
 
@@ -142,14 +111,14 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className = "",
        onMouseMove={handleMouseMove}
        onMouseEnter={handleFocus}
        onMouseLeave={handleBlur}
-       className={`relative h-full overflow-hidden rounded-[2rem] bg-[#0f172a] border border-white/10 ${className}`}
+       className={`relative h-full overflow-hidden rounded-[2rem] bg-brand-dark border border-glass-white-10 ${className}`}
        >
        {/* Spotlight Gradient */}
        <div
            className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 z-30"
            style={{
            opacity,
-           background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(37, 99, 235, 0.15), transparent 40%)`,
+           background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, var(--gradient-blue-start), transparent 40%)`,
            }}
        />
        {/* Border Glow via Spotlight */}
@@ -157,7 +126,7 @@ const SpotlightCard: React.FC<SpotlightCardProps> = ({ children, className = "",
            className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 z-10"
            style={{
                opacity,
-               background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(250, 204, 21, 0.4), transparent 40%)`,
+               background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, var(--gradient-yellow-start), transparent 40%)`,
                maskImage: 'linear-gradient(black, black), linear-gradient(black, black)',
                maskClip: 'content-box, border-box',
                maskComposite: 'exclude',
@@ -181,15 +150,15 @@ const TechCard: React.FC<TechCardProps> = ({ icon: Icon, name, category, descrip
        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
 
-       <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white mb-6 group-hover:scale-110 group-hover:bg-[#2563eb] group-hover:border-[#2563eb] transition-all duration-500 shadow-lg shadow-black/50">
+       <div className="w-14 h-14 rounded-2xl bg-glass-white-5 border border-glass-white-10 flex items-center justify-center text-white mb-6 group-hover:scale-110 group-hover:bg-brand-blue group-hover:border-brand-blue transition-all duration-500 shadow-lg shadow-black/50">
          <Icon size={28} strokeWidth={1.5} />
        </div>
       
        <div className="mb-4">
-           <span className="inline-block px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[#facc15] text-[10px] font-bold uppercase tracking-widest mb-2">
+           <span className="inline-block px-3 py-1 rounded-full bg-glass-white-5 border border-glass-white-5 text-brand-yellow text-[10px] font-bold uppercase tracking-widest mb-2">
                {category}
            </span>
-           <h3 className="text-2xl font-bold text-white group-hover:text-[#2563eb] transition-colors">{name}</h3>
+           <h3 className="text-2xl font-bold text-white group-hover:text-brand-blue transition-colors">{name}</h3>
        </div>
       
        <p className="text-slate-400 leading-relaxed text-sm group-hover:text-slate-300 transition-colors mt-auto">
@@ -201,7 +170,7 @@ const TechCard: React.FC<TechCardProps> = ({ icon: Icon, name, category, descrip
 
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle }) => (
-   <div className="mb-12 relative pl-6 border-l-2 border-[#2563eb]">
+   <div className="mb-12 relative pl-6 border-l-2 border-brand-blue">
        <h2 className="text-3xl font-bold text-white mb-2">{title}</h2>
        <p className="text-slate-400 max-w-xl">{subtitle}</p>
    </div>
@@ -249,7 +218,7 @@ const App: React.FC = () => {
 
 
  return (
-   <div className="font-sans antialiased text-white bg-[#0f172a] min-h-screen overflow-x-hidden selection:bg-[#2563eb] selection:text-white">
+   <div className="font-sans antialiased text-white bg-brand-dark min-h-screen overflow-x-hidden selection:bg-brand-blue selection:text-white">
    
 
      {/* --- Immersive Hero Section --- */}
@@ -263,14 +232,14 @@ const App: React.FC = () => {
        />
        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
        {/* Animated Orbs */}
-       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#2563eb] rounded-full blur-[150px] opacity-20 animate-pulse-slow"></div>
-       <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-[#facc15] rounded-full blur-[120px] opacity-10 animate-pulse-slow" style={{animationDelay: '1s'}}></div>
+       <BackgroundBlob color="blue" position="top-left" size="md" opacity={0.2} animate />
+       <BackgroundBlob color="yellow" position="bottom-right" size="sm" opacity={0.1} animate />
 
 
        <div className="max-w-[90rem] mx-auto text-center relative z-10">
            <FadeIn>
-               <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 shadow-lg shadow-black/20 group hover:border-[#2563eb]/50 transition-colors">
-                   <Settings size={14} className="text-[#facc15] animate-spin-slow" />
+               <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-glass-white-5 border border-glass-white-10 backdrop-blur-md mb-8 shadow-lg shadow-black/20 group hover:border-brand-blue/50 transition-colors">
+                   <Settings size={14} className="text-brand-yellow animate-spin-slow" />
                    <span className="text-xs font-bold uppercase tracking-widest text-white/90">Our Arsenal</span>
                </div>
            </FadeIn>
@@ -278,7 +247,7 @@ const App: React.FC = () => {
            <FadeIn delay={200}>
                <h1 className="text-7xl md:text-9xl font-bold tracking-tighter mb-8 leading-[0.9] text-white">
                    Built for <br/>
-                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2563eb] via-[#60a5fa] to-white animate-gradient-x">Scale.</span>
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-brand-blue-light to-white animate-gradient-x">Scale.</span>
                </h1>
            </FadeIn>
 
@@ -293,14 +262,14 @@ const App: React.FC = () => {
            <FadeIn delay={600}>
                <div className="flex flex-col sm:flex-row justify-center gap-6">
                    <div className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                       <GitBranch size={20} className="text-[#2563eb]" />
+                       <GitBranch size={20} className="text-brand-blue" />
                        <div className="text-left">
                            <p className="text-xs text-slate-400 uppercase tracking-wider">Version Control</p>
                            <p className="font-bold">Enterprise GitHub</p>
                        </div>
                    </div>
                    <div className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-                       <Workflow size={20} className="text-[#facc15]" />
+                       <Workflow size={20} className="text-brand-yellow" />
                        <div className="text-left">
                            <p className="text-xs text-slate-400 uppercase tracking-wider">CI/CD Pipeline</p>
                            <p className="font-bold">Automated Deploy</p>
@@ -358,17 +327,17 @@ const App: React.FC = () => {
 
              {/* Integration Banner */}
              <FadeIn delay={600}>
-                 <div className="mt-32 relative rounded-[3rem] overflow-hidden bg-[#050912] border border-white/10 text-white p-12 md:p-24 text-center group">
+                 <div className="mt-32 relative rounded-[3rem] overflow-hidden bg-brand-dark border border-glass-white-10 text-white p-12 md:p-24 text-center group">
                      {/* Animated Background */}
-                     <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#2563eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+                     <div className="absolute inset-0 opacity-20 bg-[radial-gradient(var(--color-brand-blue)_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
                     
                      <div className="relative z-10 max-w-3xl mx-auto">
-                         <Cpu size={64} className="text-[#facc15] mx-auto mb-8 animate-pulse" />
+                         <Cpu size={64} className="text-brand-yellow mx-auto mb-8 animate-pulse" />
                          <h2 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">Need custom architecture?</h2>
                          <p className="text-xl text-slate-400 mb-10 font-light leading-relaxed">
                              We specialize in integrating bespoke AI models, legacy systems, and proprietary hardware APIs. We build what off-the-shelf tools can't.
                          </p>
-                         <MagneticButton className="bg-white text-[#0f172a] px-10 py-4 rounded-full font-bold text-lg hover:bg-[#2563eb] hover:text-white transition-all shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)]">
+                         <MagneticButton className="bg-white text-brand-dark px-10 py-4 rounded-full font-bold text-lg hover:bg-brand-blue hover:text-white transition-all shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)]">
                              Discuss Architecture
                          </MagneticButton>
                      </div>

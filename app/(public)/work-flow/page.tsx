@@ -17,58 +17,10 @@ import {
  Box
 } from 'lucide-react';
 import { MagneticButton, MagneticButton as MagneticButtonUI } from '@/components/ui/MagnaticButton';
-
-
-// --- Utility Components ---
-
-
-const FadeIn = ({
- children,
- delay = 0,
- className = ""
-}: {
- children: React.ReactNode;
- delay?: number;
- className?: string;
-}) => {
- const [isVisible, setIsVisible] = useState(false);
- const domRef = useRef<HTMLDivElement>(null);
-
-
- useEffect(() => {
-   const observer = new IntersectionObserver(entries => {
-     entries.forEach(entry => {
-       if (entry.isIntersecting) {
-         setIsVisible(true);
-       }
-     });
-   }, { threshold: 0.1 });
-
-
-   const currentRef = domRef.current;
-   if (currentRef) observer.observe(currentRef);
-
-
-   return () => {
-     if (currentRef) observer.unobserve(currentRef);
-   };
- }, []);
-
-
- return (
-   <div
-     ref={domRef}
-     className={`transition-all duration-1000 cubic-bezier(0.16, 1, 0.3, 1) ${className}`}
-     style={{
-       opacity: isVisible ? 1 : 0,
-       transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.98)',
-       transitionDelay: `${delay}ms`
-     }}
-   >
-     {children}
-   </div>
- );
-};
+import { FadeIn } from '@/components/animations/FadeIn';
+import { Badge } from '@/components/ui/Badge';
+import { PulseIndicator } from '@/components/ui/PulseIndicator';
+import { BackgroundBlob } from '@/components/ui/BackgroundBlob';
 
 
 // --- Process Step Component (Sticky Card) ---
@@ -93,10 +45,10 @@ const ProcessCard = ({
    >
      <div className="relative group">
        {/* Glow Effect behind card */}
-       <div className={`absolute -inset-1 rounded-[2.5rem] opacity-0 group-hover:opacity-30 transition-opacity duration-500 blur-xl ${index % 2 === 0 ? 'bg-[#2563eb]' : 'bg-[#facc15]'}`}></div>
+       <div className={`absolute -inset-1 rounded-[2.5rem] opacity-0 group-hover:opacity-30 transition-opacity duration-500 blur-xl ${index % 2 === 0 ? 'bg-brand-blue' : 'bg-brand-yellow'}`}></div>
       
        {/* Main Card Body */}
-       <div className="relative bg-[#0f172a] border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl overflow-hidden flex flex-col md:flex-row gap-8 md:gap-16 items-start md:items-center min-h-[400px]">
+       <div className="relative bg-brand-dark border border-glass-white-10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl overflow-hidden flex flex-col md:flex-row gap-8 md:gap-16 items-start md:items-center min-h-[400px]">
         
          {/* Background Gradient Mesh */}
          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-b from-white/5 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
@@ -112,10 +64,9 @@ const ProcessCard = ({
 
          {/* Content Column */}
          <div className="relative z-10 flex-grow">
-           <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border mb-6 ${index % 2 === 0 ? 'border-[#2563eb]/30 bg-[#2563eb]/10 text-[#2563eb]' : 'border-[#facc15]/30 bg-[#facc15]/10 text-[#facc15]'}`}>
-             {step.icon}
-             <span className="text-xs font-bold uppercase tracking-widest">{step.label}</span>
-           </div>
+           <Badge variant={index % 2 === 0 ? 'blue' : 'yellow'} className="mb-6" icon={step.icon}>
+             {step.label}
+           </Badge>
           
            <h3 className="text-4xl md:text-5xl font-bold text-white mb-6">
              {step.title}
@@ -139,7 +90,7 @@ const ProcessCard = ({
 
          {/* Decorative Icon Visual */}
          <div className="hidden lg:flex items-center justify-center w-32 h-32 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
-            <ArrowUpRight className={`w-12 h-12 ${index % 2 === 0 ? 'text-[#2563eb]' : 'text-[#facc15]'}`} />
+            <ArrowUpRight className={`w-12 h-12 ${index % 2 === 0 ? 'text-brand-blue' : 'text-brand-yellow'}`} />
          </div>
 
 
@@ -212,12 +163,12 @@ export default function WorkflowPageOne() {
 
 
  return (
-   <div className="min-h-screen bg-[#0f172a] text-white font-sans selection:bg-[#facc15] selection:text-[#0f172a] overflow-x-hidden">
+   <div className="min-h-screen bg-brand-dark text-white font-sans selection:bg-brand-yellow selection:text-brand-dark overflow-x-hidden">
     
      {/* Background Ambience */}
      <div className="fixed inset-0 pointer-events-none z-0">
-       <div className="absolute top-[-10%] right-[-10%] w-[1000px] h-[1000px] bg-[#2563eb] rounded-full blur-[200px] opacity-10 animate-pulse-slow"></div>
-       <div className="absolute bottom-[-10%] left-[-10%] w-[800px] h-[800px] bg-[#facc15] rounded-full blur-[200px] opacity-5"></div>
+       <BackgroundBlob color="blue" position="top-right" size="xl" opacity={0.1} animate />
+       <BackgroundBlob color="yellow" position="bottom-left" size="lg" opacity={0.05} />
        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay"></div>
      </div>
 
@@ -226,10 +177,10 @@ export default function WorkflowPageOne() {
        <div className="max-w-7xl mx-auto text-center relative z-10">
          <FadeIn>
            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-8">
-             <span className="w-2 h-2 rounded-full bg-[#facc15] animate-pulse"></span>
+             <PulseIndicator />
              <span className="text-xs font-bold uppercase tracking-widest text-white/60">Our Methodology</span>
            </div>
-           <h1 className="text-7xl md:text-[9rem] font-black tracking-tighter mb-8 leading-[0.9]">
+           <h1 className="text-6xl md:text-[9rem] font-black tracking-tighter mb-8 leading-[0.9]">
              THE <br />
              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/40">
                BLUEPRINT.
@@ -245,14 +196,14 @@ export default function WorkflowPageOne() {
 
 
          <FadeIn delay={400} className="flex justify-center">
-            <div className="w-px h-24 bg-gradient-to-b from-[#2563eb] to-transparent"></div>
+            <div className="w-px h-24 bg-gradient-to-b from-brand-blue to-transparent"></div>
          </FadeIn>
        </div>
      </section>
 
 
      {/* --- Sticky Process Steps --- */}
-     <section className="pb-48 px-6 relative z-10">
+     <section className="pb-30 md:pb-48 px-6 relative z-10">
        <div className="max-w-5xl mx-auto">
           {processSteps.map((step, index) => (
             <ProcessCard
@@ -267,35 +218,35 @@ export default function WorkflowPageOne() {
 
 
      {/* --- Outcome Stats (Bento Grid) --- */}
-     <section className="py-32 px-6 bg-white text-[#0f172a]">
+     <section className="py-32 px-6 bg-white text-brand-dark">
        <div className="max-w-7xl mx-auto">
          <FadeIn className="mb-20">
             <h2 className="text-5xl md:text-7xl font-black tracking-tight mb-6">
-              THE <span className="text-[#2563eb]">OUTCOME</span>
+              THE <span className="text-brand-blue">OUTCOME</span>
             </h2>
-            <p className="text-xl text-[#0f172a]/60 max-w-2xl">
+            <p className="text-xl text-brand-dark/60 max-w-2xl">
               Process is nothing without results. Here is what happens when you trust the blueprint.
             </p>
          </FadeIn>
         
          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <FadeIn delay={100} className="p-10 bg-[#f1f5f9] rounded-[2.5rem] flex flex-col justify-between min-h-[300px] group hover:bg-[#2563eb] hover:text-white transition-colors duration-500">
-               <Box size={40} className="text-[#2563eb] group-hover:text-white transition-colors" />
+            <FadeIn delay={100} className="p-10 bg-slate-100 rounded-[2.5rem] flex flex-col justify-between min-h-[300px] group hover:bg-brand-blue hover:text-white transition-colors duration-500">
+               <Box size={40} className="text-brand-blue group-hover:text-white transition-colors" />
                <div>
                   <span className="block text-6xl font-black mb-2">2x</span>
                   <span className="font-bold uppercase tracking-widest opacity-60">Development Speed</span>
                </div>
             </FadeIn>
            
-            <FadeIn delay={200} className="p-10 bg-[#0f172a] text-white rounded-[2.5rem] flex flex-col justify-between min-h-[300px] md:col-span-2 relative overflow-hidden group">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-[#facc15] rounded-full blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            <FadeIn delay={200} className="p-10 bg-brand-dark text-white rounded-[2.5rem] flex flex-col justify-between min-h-[300px] md:col-span-2 relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-brand-yellow rounded-full blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity"></div>
                <div className="relative z-10 flex justify-between items-start">
-                  <CheckCircle2 size={40} className="text-[#facc15]" />
+                  <CheckCircle2 size={40} className="text-brand-yellow" />
                   <ArrowUpRight size={40} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                </div>
                <div className="relative z-10">
                   <span className="block text-6xl font-black mb-2">99.9%</span>
-                  <span className="font-bold uppercase tracking-widest text-[#facc15]">Uptime Guarantee</span>
+                  <span className="font-bold uppercase tracking-widest text-brand-yellow">Uptime Guarantee</span>
                   <p className="mt-4 text-white/50 max-w-md">Our architecture is built for redundancy and scale from the very first commit.</p>
                </div>
             </FadeIn>

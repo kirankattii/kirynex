@@ -3,6 +3,39 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Brand Colors */
+  --color-brand-blue: #2563eb;
+  --color-brand-blue-dark: #1e4fc9;
+  --color-brand-blue-light: #60a5fa;
+  --color-brand-yellow: #facc15;
+  --color-brand-dark: #0f172a;
+  --color-brand-light: #f8fafc;
+  
+  /* Glass Effect Colors */
+  --glass-bg-light: rgba(255, 255, 255, 0.7);
+  --glass-border-light: rgba(255, 255, 255, 0.3);
+  --glass-bg-dark: rgba(0, 0, 0, 0.6);
+  --glass-border-dark: rgba(255, 255, 255, 0.1);
+  --glass-bg-white-5: rgba(255, 255, 255, 0.05);
+  --glass-bg-white-10: rgba(255, 255, 255, 0.1);
+  --glass-border-white-10: rgba(255, 255, 255, 0.1);
+  --glass-border-white-20: rgba(255, 255, 255, 0.2);
+  
+  /* Selection Colors */
+  --selection-bg: var(--color-brand-yellow);
+  --selection-text: var(--color-brand-dark);
+  
+  /* Shadow Colors */
+  --shadow-blue: rgba(37, 99, 235, 0.5);
+  --shadow-blue-light: rgba(37, 99, 235, 0.3);
+  --shadow-blue-10: rgba(37, 99, 235, 0.1);
+  --shadow-slate: rgba(0, 0, 0, 0.05);
+  
+  /* Gradient Colors */
+  --gradient-blue-start: rgba(37, 99, 235, 0.15);
+  --gradient-yellow-start: rgba(250, 204, 21, 0.4);
+  --gradient-dark-overlay: rgba(15, 23, 42, 0.2);
 }
 
 @theme inline {
@@ -13,11 +46,12 @@
   --font-inter: var(--font-inter);
   
   /* Brand colors - nested format for Tailwind v4 */
-  --color-brand-blue: #2563eb;
-  --color-brand-blue-dark: #1e4fc9;
-  --color-brand-yellow: #facc15;
-  --color-brand-dark: #0f172a;
-  --color-brand-light: #f8fafc;
+  --color-brand-blue: var(--color-brand-blue);
+  --color-brand-blue-dark: var(--color-brand-blue-dark);
+  --color-brand-blue-light: var(--color-brand-blue-light);
+  --color-brand-yellow: var(--color-brand-yellow);
+  --color-brand-dark: var(--color-brand-dark);
+  --color-brand-light: var(--color-brand-light);
   
   /* Animations */
   --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
@@ -50,6 +84,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Selection styling */
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+::-moz-selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -63,15 +108,15 @@ body {
 
 /* Glass panel effect */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--glass-bg-light);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--glass-border-light);
 }
 
 .glass-dark {
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--glass-bg-dark);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border-dark);
 }
