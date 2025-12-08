@@ -37,11 +37,13 @@ const useMousePosition = () => {
 const MagneticButton = ({ 
  children, 
  className = "", 
- onClick 
+ onClick,
+ type = "button"
 }: {
  children: React.ReactNode;
  className?: string;
- onClick?: () => void;
+ onClick?: (e: React.MouseEvent<HTMLButtonElement> | React.FormEvent) => void;
+ type?: "button" | "submit" | "reset";
 }) => {
  const buttonRef = useRef<HTMLButtonElement>(null);
  const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -61,13 +63,20 @@ const MagneticButton = ({
    setPosition({ x: 0, y: 0 });
  };
 
+ const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+   if (onClick) {
+     onClick(e);
+   }
+ };
+
 
  return (
    <button
+     type={type}
      ref={buttonRef}
      onMouseMove={handleMouseMove}
      onMouseLeave={handleMouseLeave}
-     onClick={onClick}
+     onClick={handleClick}
      style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
      className={`relative overflow-hidden transition-transform duration-200 ease-out ${className}`}
    >
@@ -81,12 +90,18 @@ const InputField = ({
  label, 
  type = "text", 
  placeholder, 
- isTextArea = false 
+ isTextArea = false,
+ value,
+ onChange,
+ name
 }: {
  label: string;
  type?: string;
  placeholder?: string;
  isTextArea?: boolean;
+ value?: string;
+ onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+ name?: string;
 }) => (
  <div className="group relative">
    <label className="absolute -top-2.5 left-3 md:-top-3 md:left-4 bg-brand-dark px-1 md:px-2 text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-brand-blue transition-colors z-10">
@@ -94,13 +109,19 @@ const InputField = ({
    </label>
    {isTextArea ? (
      <textarea
+       name={name}
+       value={value}
+       onChange={onChange}
        rows={2} // Reduced rows for mobile
        placeholder={placeholder}
        className="w-full bg-glass-white-5 border border-glass-white-10 rounded-xl md:rounded-2xl px-4 py-3 md:px-6 md:py-5 text-sm md:text-base text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-blue focus:bg-glass-white-10 focus:ring-1 focus:ring-brand-blue transition-all resize-none backdrop-blur-sm min-h-[80px] md:min-h-[120px]"
      />
    ) : (
      <input
+       name={name}
        type={type}
+       value={value}
+       onChange={onChange}
        placeholder={placeholder}
        className="w-full bg-glass-white-5 border border-glass-white-10 rounded-xl md:rounded-2xl px-4 py-3 md:px-6 md:py-5 text-sm md:text-base text-white placeholder:text-slate-600 focus:outline-none focus:border-brand-blue focus:bg-glass-white-10 focus:ring-1 focus:ring-brand-blue transition-all backdrop-blur-sm"
      />
@@ -143,6 +164,19 @@ export const ContactPage = () => {
  const [isScrolled, setIsScrolled] = useState<boolean>(false);
  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
  const { x, y } = useMousePosition();
+ 
+ // Form state
+ const [formData, setFormData] = useState({
+   name: '',
+   company: '',
+   email: '',
+   phone: '',
+   interest: 'Web Development',
+   brief: '',
+ });
+ const [isSubmitting, setIsSubmitting] = useState(false);
+ const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+ const [errorMessage, setErrorMessage] = useState('');
 
 
  useEffect(() => {
@@ -150,6 +184,97 @@ export const ContactPage = () => {
    window.addEventListener('scroll', handleScroll);
    return () => window.removeEventListener('scroll', handleScroll);
  }, []);
+
+ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+   const { name, value } = e.target;
+   setFormData(prev => ({ ...prev, [name]: value }));
+   // Clear error status when user starts typing
+   if (submitStatus === 'error') {
+     setSubmitStatus('idle');
+     setErrorMessage('');
+   }
+ };
+
+ const handleSubmit = async (e: React.FormEvent) => {
+   e.preventDefault();
+   
+   // Prevent double submission
+   if (isSubmitting) {
+     return;
+   }
+   
+   // Validate required fields
+   if (!formData.name.trim()) {
+     setSubmitStatus('error');
+     setErrorMessage('Name is required');
+     return;
+   }
+   
+   // Validate that at least one contact method is provided
+   if (!formData.email.trim() && !formData.phone.trim()) {
+     setSubmitStatus('error');
+     setErrorMessage('Please provide either an email address or phone number');
+     return;
+   }
+
+   setIsSubmitting(true);
+   setSubmitStatus('idle');
+   setErrorMessage('');
+
+   try {
+     const response = await fetch('/api/send-contact', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
+       },
+       body: JSON.stringify({
+         name: formData.name,
+         company: formData.company,
+         email: formData.email,
+         phone: formData.phone,
+         interest: formData.interest,
+         brief: formData.brief,
+       }),
+     });
+
+     // Check if response is ok before parsing JSON
+     let data;
+     try {
+       data = await response.json();
+     } catch (parseError) {
+       console.error('Failed to parse response:', parseError);
+       throw new Error('Invalid response from server');
+     }
+
+     if (!response.ok) {
+       // Use detailed error message from API if available
+       const errorMsg = data.details || data.error || `Server error: ${response.status}`;
+       throw new Error(errorMsg);
+     }
+
+     setSubmitStatus('success');
+     // Reset form
+     setFormData({
+       name: '',
+       company: '',
+       email: '',
+       phone: '',
+       interest: 'Web Development',
+       brief: '',
+     });
+     
+     // Clear success message after 5 seconds
+     setTimeout(() => {
+       setSubmitStatus('idle');
+     }, 5000);
+   } catch (error) {
+     console.error('Form submission error:', error);
+     setSubmitStatus('error');
+     setErrorMessage(error instanceof Error ? error.message : 'An error occurred. Please try again.');
+   } finally {
+     setIsSubmitting(false);
+   }
+ };
 
 
  return (
@@ -293,38 +418,106 @@ export const ContactPage = () => {
                                <p className="text-sm md:text-base text-slate-400">Tell us about your goals. We'll handle the engineering.</p>
                            </div>
 
+                           {/* Success/Error Alerts */}
+                           {submitStatus === 'success' && (
+                               <div className="relative z-10 mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-400 text-sm">
+                                   ✓ Message sent successfully! We'll get back to you soon.
+                               </div>
+                           )}
+                           {submitStatus === 'error' && (
+                               <div className="relative z-10 mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-sm">
+                                   ✗ {errorMessage}
+                               </div>
+                           )}
 
-                           <form className="space-y-3 md:space-y-8 relative z-10">
+                           <form onSubmit={handleSubmit} className="space-y-3 md:space-y-8 relative z-10">
                                <div className="grid grid-cols-2 gap-3 md:gap-8">
-                                   <InputField label="Identity" placeholder="John Doe" />
-                                   <InputField label="Organization" placeholder="Acme Inc." />
+                                   <InputField 
+                                       name="name"
+                                       label="Identity" 
+                                       placeholder="John Doe" 
+                                       value={formData.name}
+                                       onChange={handleInputChange}
+                                   />
+                                   <InputField 
+                                       name="company"
+                                       label="Organization" 
+                                       placeholder="Acme Inc." 
+                                       value={formData.company}
+                                       onChange={handleInputChange}
+                                   />
                                </div>
                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-8">
-                                   <InputField label="Contact" type="email" placeholder="john@acme.com" />
-                                   <div className="group relative">
-                                       <label className="absolute -top-2.5 left-3 md:-top-3 md:left-4 bg-brand-dark px-1 md:px-2 text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-brand-blue transition-colors z-10">
-                                           Interest
-                                       </label>
-                                       <div className="relative">
-                                           <select className="w-full bg-glass-white-5 border border-glass-white-10 rounded-xl md:rounded-2xl px-4 py-3 md:px-6 md:py-5 text-sm md:text-base text-white appearance-none cursor-pointer focus:outline-none focus:border-brand-blue focus:bg-glass-white-10 focus:ring-1 focus:ring-brand-blue transition-all backdrop-blur-sm">
-                                               <option className="bg-brand-dark">Web Development</option>
-                                               <option className="bg-brand-dark">Mobile Application</option>
-                                               <option className="bg-brand-dark">AI Integration</option>
-                                               <option className="bg-brand-dark">Product Design</option>
-                                           </select>
-                                           <ChevronDown className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none w-4 h-4 md:w-5 md:h-5" />
-                                       </div>
+                                   <InputField 
+                                       name="email"
+                                       label="Email" 
+                                       type="email" 
+                                       placeholder="john@acme.com" 
+                                       value={formData.email}
+                                       onChange={handleInputChange}
+                                   />
+                                   <InputField 
+                                       name="phone"
+                                       label="Phone" 
+                                       type="tel" 
+                                       placeholder="+91 98765 43210" 
+                                       value={formData.phone}
+                                       onChange={handleInputChange}
+                                   />
+                               </div>
+                               <div className="group relative">
+                                   <label className="absolute -top-2.5 left-3 md:-top-3 md:left-4 bg-brand-dark px-1 md:px-2 text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 group-focus-within:text-brand-blue transition-colors z-10">
+                                       Interest
+                                   </label>
+                                   <div className="relative">
+                                       <select 
+                                           name="interest"
+                                           value={formData.interest}
+                                           onChange={handleInputChange}
+                                           className="w-full bg-glass-white-5 border border-glass-white-10 rounded-xl md:rounded-2xl px-4 py-3 md:px-6 md:py-5 text-sm md:text-base text-white appearance-none cursor-pointer focus:outline-none focus:border-brand-blue focus:bg-glass-white-10 focus:ring-1 focus:ring-brand-blue transition-all backdrop-blur-sm"
+                                       >
+                                           <option value="Web Development" className="bg-brand-dark">Web Development</option>
+                                           <option value="Mobile Application" className="bg-brand-dark">Mobile Application</option>
+                                           <option value="AI Integration" className="bg-brand-dark">AI Integration</option>
+                                           <option value="Product Design" className="bg-brand-dark">Product Design</option>
+                                       </select>
+                                       <ChevronDown className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none w-4 h-4 md:w-5 md:h-5" />
                                    </div>
                                </div>
                               
-                               <InputField label="Brief" isTextArea={true} placeholder="Describe your vision..." />
+                               <InputField 
+                                   name="brief"
+                                   label="Brief" 
+                                   isTextArea={true} 
+                                   placeholder="Describe your vision..." 
+                                   value={formData.brief}
+                                   onChange={handleInputChange}
+                               />
 
 
                                <div className="flex justify-end pt-4">
-                                   <MagneticButton className="group bg-white text-black px-8 py-4 md:px-10 md:py-5 rounded-full font-bold text-base md:text-lg hover:bg-brand-blue hover:text-white hover:shadow-blue flex items-center gap-3 w-full md:w-auto justify-center">
-                                       <span className="relative z-10">Launch Request</span>
-                                       <Send size={18} className="relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                       <div className="absolute inset-0 bg-brand-yellow translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
+                                   <MagneticButton 
+                                       type="submit"
+                                       onClick={(e) => {
+                                         // Form onSubmit will handle the submission
+                                         // This is just for the magnetic effect
+                                       }}
+                                       className={`group bg-white text-black px-8 py-4 md:px-10 md:py-5 rounded-full font-bold text-base md:text-lg hover:bg-brand-blue hover:text-white hover:shadow-blue flex items-center gap-3 w-full md:w-auto justify-center ${isSubmitting ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                                   >
+                                       {isSubmitting ? (
+                                           <>
+                                               <span className="relative z-10 flex items-center gap-2">
+                                                   <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                                                   Sending...
+                                               </span>
+                                           </>
+                                       ) : (
+                                           <>
+                                               <span className="relative z-10">Launch Request</span>
+                                               <Send size={18} className="relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                               <div className="absolute inset-0 bg-brand-yellow translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
+                                           </>
+                                       )}
                                    </MagneticButton>
                                </div>
                            </form>

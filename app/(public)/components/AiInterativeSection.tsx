@@ -21,18 +21,41 @@ const RevealOnScroll = ({ children, className = "", delay = 0 }: { children: Rea
 
 // --- Main Component ---
 
+interface AIAnalysis {
+  techStack: string[];
+  complexity: {
+    score: number;
+    level: string;
+    description: string;
+  };
+  features: string[];
+  timeline: {
+    weeks: number;
+    phases: Array<{
+      title: string;
+      weeks: string;
+      status: string;
+    }>;
+  };
+}
+
 export  const AIInteractiveSection = () => {
   const [prompt, setPrompt] = useState<string>("");
-  const [step, setStep] = useState<number>(0); // 0: input, 1: loading, 2: result
+  const [step, setStep] = useState<number>(0); // 0: input, 1: loading, 2: result, 3: error
   const [loadingText, setLoadingText] = useState("Initializing Neural Network...");
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [analysisData, setAnalysisData] = useState<AIAnalysis | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAskAI = (e: React.FormEvent<HTMLFormElement>  ) => {
+  const handleAskAI = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!prompt) return;
+    if (!prompt.trim()) return;
+    
     setStep(1 as const);
+    setError(null);
+    setAnalysisData(null);
 
-    // Simulate AI Latency sequence
+    // Loading text sequence
     const texts = ["Parsing Requirements...", "Matching Tech Stack...", "Calculating Timeline...", "Generating Architecture..."];
     let i = 0;
     
@@ -40,12 +63,37 @@ export  const AIInteractiveSection = () => {
       setLoadingText(texts[i]);
       i++;
       if (i >= texts.length) i = 0;
-    }, 300);
+    }, 800);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: prompt.trim() }),
+      });
+
+      const data = await response.json();
+
       clearInterval(interval);
-      setStep(2 as const);
-    }, 1500);
+
+      if (!response.ok) {
+        throw new Error(data.details || data.error || 'Failed to generate analysis');
+      }
+
+      if (data.success && data.data) {
+        setAnalysisData(data.data);
+        setStep(2 as const);
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (err: any) {
+      clearInterval(interval);
+      setError(err.message || 'An error occurred while generating the analysis');
+      setStep(3 as const);
+      console.error('AI API error:', err);
+    }
   };
 
   const handleDownloadPDF = () => {
@@ -160,6 +208,23 @@ export  const AIInteractiveSection = () => {
                   </div>
                 )}
 
+                {/* STATE 3: Error */}
+                {step === 3 && (
+                  <div className="flex flex-col items-center justify-center h-full flex-grow p-6 md:p-12 bg-gradient-to-br from-red-50 to-white">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-red-100 border border-red-200 rounded-2xl flex items-center justify-center mb-6 md:mb-8 shadow-lg">
+                      <MessageSquare className="text-red-500 w-6 h-6 md:w-8 md:h-8" />
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 text-center">Analysis Failed</h3>
+                    <p className="text-sm md:text-base text-slate-600 mb-8 text-center max-w-md">{error || 'An unexpected error occurred'}</p>
+                    <button 
+                      onClick={() => { setStep(0); setError(null); }} 
+                      className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2"
+                    >
+                      Try Again <ArrowRight size={16} className="text-yellow-400" />
+                    </button>
+                  </div>
+                )}
+
                 {/* STATE 2: Result */}
                 {step === 2 && (
                   <div className="flex flex-col h-full bg-slate-50 animate-fade-in-up flex-grow">
@@ -176,7 +241,7 @@ export  const AIInteractiveSection = () => {
                       </div>
                       <div className="flex items-center gap-2 w-full sm:w-auto">
                          <button 
-                          onClick={() => { setStep(0); setPrompt(""); }} 
+                          onClick={() => { setStep(0); setPrompt(""); setAnalysisData(null); setError(null); }} 
                           className="flex-1 sm:flex-none text-xs md:text-sm font-medium text-slate-500 hover:text-slate-900 px-3 py-2 md:px-4 md:py-2 rounded-lg transition-colors bg-slate-50 sm:bg-transparent"
                         >
                           Reset
@@ -214,11 +279,11 @@ export  const AIInteractiveSection = () => {
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Recommended Stack</span>
                           </div>
                           <div className="space-y-2 md:space-y-3">
-                            {['React.js', 'Node.js', 'Python AI', 'PostgreSQL'].map((tech, i) => (
+                            {(analysisData?.techStack || ['React.js', 'Node.js', 'Python AI', 'PostgreSQL']).map((tech, i) => (
                               <div key={i} className="flex items-center justify-between group p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-default">
                                 <div className="flex items-center gap-3">
                                   <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${i === 2 ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-50 text-blue-600'}`}>
-                                    {tech.slice(0, 2)}
+                                    {tech.slice(0, 2).toUpperCase()}
                                   </span>
                                   <span className="font-medium text-slate-700 text-sm">{tech}</span>
                                 </div>
@@ -236,22 +301,31 @@ export  const AIInteractiveSection = () => {
                                   <Layers size={16} className="text-yellow-400" />
                                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Complexity</span>
                                 </div>
-                                <span className="px-2 py-0.5 rounded bg-yellow-400 text-black text-[10px] font-bold uppercase">High</span>
+                                <span className="px-2 py-0.5 rounded bg-yellow-400 text-black text-[10px] font-bold uppercase">
+                                  {analysisData?.complexity?.level || 'Medium'}
+                                </span>
                               </div>
                               <div className="flex items-end gap-2 mt-2">
-                                <span className="text-3xl md:text-4xl font-bold">8.5</span>
+                                <span className="text-3xl md:text-4xl font-bold">
+                                  {analysisData?.complexity?.score?.toFixed(1) || '7.5'}
+                                </span>
                                 <span className="text-slate-500 mb-1">/10</span>
                               </div>
-                              <p className="text-xs text-slate-400 mt-2">Requires microservices architecture for scale.</p>
+                              <p className="text-xs text-slate-400 mt-2">
+                                {analysisData?.complexity?.description || 'Standard complexity project'}
+                              </p>
                            </div>
                            
                            <div className="mt-6 relative z-10">
                               <div className="flex justify-between text-[10px] font-bold uppercase text-slate-500 mb-1">
                                 <span>Dev Effort</span>
-                                <span>12 Weeks</span>
+                                <span>{analysisData?.timeline?.weeks || 12} Weeks</span>
                               </div>
                               <div className="w-full bg-slate-700 rounded-full h-1.5">
-                                <div className="bg-yellow-400 h-1.5 rounded-full" style={{ width: '85%' }}></div>
+                                <div 
+                                  className="bg-yellow-400 h-1.5 rounded-full" 
+                                  style={{ width: `${Math.min(100, ((analysisData?.complexity?.score || 7.5) / 10) * 100)}%` }}
+                                ></div>
                               </div>
                            </div>
                         </div>
@@ -263,7 +337,7 @@ export  const AIInteractiveSection = () => {
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Security & Core</span>
                           </div>
                           <ul className="space-y-2">
-                            {['Auth0 SSO Integration', 'Role-Based Access Control', 'AES-256 Data Encryption', 'Automated Backups'].map((item, i) => (
+                            {(analysisData?.features || ['Auth0 SSO Integration', 'Role-Based Access Control', 'AES-256 Data Encryption', 'Automated Backups']).map((item, i) => (
                               <li key={i} className="flex items-start gap-2 text-xs md:text-sm text-slate-600">
                                 <CheckCircle2 size={14} className="text-green-500 mt-0.5 shrink-0" />
                                 {item}
@@ -283,12 +357,12 @@ export  const AIInteractiveSection = () => {
                              {/* Connector Line (Desktop Only) */}
                              <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 -translate-y-1/2 z-0"></div>
 
-                             {[
+                             {(analysisData?.timeline?.phases || [
                                { title: "Discovery", weeks: "Wk 1-2", status: "Planning" },
                                { title: "MVP Dev", weeks: "Wk 3-8", status: "Development" },
                                { title: "QA & Testing", weeks: "Wk 9-10", status: "Refinement" },
                                { title: "Launch", weeks: "Wk 11-12", status: "Deployment" }
-                             ].map((phase, idx) => (
+                             ]).map((phase, idx) => (
                                <div key={idx} className="flex-1 relative z-10 bg-white p-3 md:p-4 border border-slate-100 rounded-xl shadow-sm hover:border-yellow-400 transition-colors group flex md:block items-center md:items-start gap-4 md:gap-0">
                                   <div className="flex justify-between items-start mb-0 md:mb-2 shrink-0 md:shrink md:w-full">
                                     <span className="text-[10px] md:text-xs font-bold text-slate-400 group-hover:text-yellow-500 transition-colors w-12 md:w-auto">{phase.weeks}</span>

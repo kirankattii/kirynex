@@ -45,7 +45,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
 }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    service: '',
+    service: [] as string[],
     timeline: '',
     message: '',
     name: '',
@@ -56,6 +56,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Reset state when opening/closing
   useEffect(() => {
@@ -63,6 +64,16 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
       document.body.style.overflow = 'hidden';
       setStep(1);
       setIsSubmitted(false);
+      setSubmitError(null);
+      setFormData({
+        service: [],
+        timeline: '',
+        message: '',
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+      });
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -73,23 +84,68 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleServiceToggle = (serviceId: string) => {
+    setFormData(prev => {
+      const currentServices = prev.service;
+      if (currentServices.includes(serviceId)) {
+        // Remove service if already selected
+        return { ...prev, service: currentServices.filter(id => id !== serviceId) };
+      } else {
+        // Add service if not selected
+        return { ...prev, service: [...currentServices, serviceId] };
+      }
+    });
+  };
+
   const nextStep = () => setStep(prev => prev + 1);
   const prevStep = () => setStep(prev => prev - 1);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.name.trim() || !formData.email.trim()) {
+      setSubmitError('Please fill in all required fields');
+      return;
+    }
+
     setIsSubmitting(true);
+    setSubmitError(null);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    
-    // Close after showing success message for a few seconds
-    setTimeout(() => {
-      onClose();
-    }, 3000);
+    try {
+      const response = await fetch('/api/send-project-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          service: formData.service, // Now an array
+          timeline: formData.timeline,
+          message: formData.message,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit inquiry');
+      }
+
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      
+      // Close after showing success message for a few seconds
+      setTimeout(() => {
+        onClose();
+      }, 3000);
+    } catch (error) {
+      setIsSubmitting(false);
+      setSubmitError(error instanceof Error ? error.message : 'An error occurred. Please try again.');
+    }
   };
 
   // Variants for step transitions
@@ -180,6 +236,13 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col h-full">
                   <StepIndicator current={step} />
+                  
+                  {/* Error Alert */}
+                  {submitError && (
+                    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                      ✗ {submitError}
+                    </div>
+                  )}
 
                   <AnimatePresence mode='wait' custom={step}>
                     {step === 1 && (
@@ -193,14 +256,15 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                         className="space-y-6"
                       >
                         <h3 className="text-lg font-semibold text-slate-900">What do you need help with?</h3>
+                        <p className="text-sm text-slate-500 mb-4">Select all that apply</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {serviceOptions.map((item) => {
                             const Icon = item.icon;
-                            const isSelected = formData.service === item.id;
+                            const isSelected = formData.service.includes(item.id);
                             return (
                               <div
                                 key={item.id}
-                                onClick={() => handleChange('service', item.id)}
+                                onClick={() => handleServiceToggle(item.id)}
                                 className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex items-start gap-4 hover:shadow-md ${
                                   isSelected
                                     ? 'border-brand-blue bg-blue-50/50 ring-1 ring-brand-blue'
@@ -210,12 +274,19 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                                 <div className={`p-2 rounded-lg ${isSelected ? 'bg-brand-blue text-white' : 'bg-slate-100 text-slate-500'}`}>
                                   <Icon size={20} />
                                 </div>
-                                <div>
+                                <div className="flex-1">
                                   <div className={`font-semibold ${isSelected ? 'text-brand-blue' : 'text-slate-700'}`}>
                                     {item.label}
                                   </div>
                                   <div className="text-xs text-slate-400 mt-1">{item.desc}</div>
                                 </div>
+                                {isSelected && (
+                                  <div className="flex-shrink-0">
+                                    <div className="w-5 h-5 rounded-full bg-brand-blue flex items-center justify-center">
+                                      <span className="text-white text-xs font-bold">✓</span>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             );
                           })}
@@ -345,7 +416,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                       <button
                         type="button"
                         onClick={nextStep}
-                        disabled={step === 1 && !formData.service}
+                        disabled={step === 1 && formData.service.length === 0}
                         className="flex items-center gap-2 px-8 py-3 rounded-xl bg-brand-dark text-white font-bold hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-dark/20"
                       >
                         Next Step <ArrowRight size={18} />
