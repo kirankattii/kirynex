@@ -74,7 +74,7 @@ export const Marquee = ({
   );
 
   return (
-    <div className={`overflow-hidden flex select-none w-full py-6 ${className}`}>
+    <div className={`overflow-hidden flex select-none w-full py-6 bg-black ${className}`}>
       {/* We render two identical motion divs side-by-side.
          They slide together. When the first one moves out of view (-100%), 
          it instantly resets to 0, creating the illusion of infinity.

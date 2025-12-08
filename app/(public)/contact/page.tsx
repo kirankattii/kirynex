@@ -377,7 +377,7 @@ export const ContactPage = () => {
                        <ContactCard
                            icon={Mail}
                            title="Direct Line"
-                           value="hello@kirynex.agency"
+                           value="kirynex1@gmail.com"
                            subtext="For general inquiries & partnerships"
                        />
                    </FadeIn>

@@ -4,6 +4,7 @@ import {
   Twitter, 
   Linkedin, 
   Github, 
+  Instagram,
   Copy,
   Check,
 } from 'lucide-react';
@@ -12,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 // --- Utility: Copy Email Component (Compact Version) ---
 const CopyEmail = () => {
   const [copied, setCopied] = useState(false);
-  const email = "hello@kirynex.com";
+  const email = "kirynex1@gmail.com";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(email);
@@ -95,8 +96,8 @@ export default function Footer() {
                     { label: 'Work', href: '#work' },
                     { label: 'Services', href: '#services' },
                     { label: 'Work Flow', href: '/work-flow' },
-                    { label: 'Agency', href: '#agency' },
-                    { label: 'Careers', href: '#careers' }
+                    { label: 'Technology', href: '#technology' },
+                    { label: 'Portfolio', href: '#portfolio' }
                 ].map((item) => (
                     <a key={item.label} href={item.href} className="hover:text-white hover:underline decoration-[#2563eb] underline-offset-4 transition-all">
                         {item.label}
@@ -108,16 +109,16 @@ export default function Footer() {
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
                 <CopyEmail />
                 <div className="flex gap-3 border-l border-white/10 pl-0 md:pl-6">
-                    <SocialIcon icon={Linkedin} href="#" />
-                    <SocialIcon icon={Twitter} href="#" />
-                    <SocialIcon icon={Github} href="#" />
+                    <SocialIcon icon={Linkedin} href="https://www.linkedin.com/company/kirynex/" />
+                    <SocialIcon icon={Twitter} href="https://x.com/kirynex_in" />
+                    <SocialIcon icon={Instagram} href="https://www.instagram.com/kirynex/" />
                 </div>
             </div>
         </div>
 
         {/* BOTTOM: Minimal Legal Line */}
         <div className="mt-8 md:mt-10 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-600 font-mono uppercase tracking-wide">
-            <p>© 2025 Kirynex Inc. Silicon Valley, CA.</p>
+            <p>© 2025 Kirynex Inc. Bengaluru, India.</p>
             <div className="flex gap-4">
                 <a href="#" className="hover:text-slate-400 transition-colors">Privacy</a>
                 <a href="#" className="hover:text-slate-400 transition-colors">Terms</a>

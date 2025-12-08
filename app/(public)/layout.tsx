@@ -78,7 +78,7 @@ export const metadata: Metadata = {
       },
     ],
     countryName: 'India',
-    emails: ['hello@kirynex.agency'],
+    emails: ['kirynex1@gmail.com'],
   },
   twitter: {
     card: 'summary_large_image',

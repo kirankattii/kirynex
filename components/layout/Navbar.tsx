@@ -162,6 +162,7 @@ export default function Navbar() {
         {/* CTA & Mobile Toggle */}
         <div className="flex items-center gap-3">
           <button
+            onClick={() => router.push('/contact')}
             className={`hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all hover:scale-105 shadow-md ${
               isScrolled
                 ? "bg-[#0B1120] text-white hover:bg-blue-600"
@@ -301,7 +302,7 @@ export default function Navbar() {
                   Start a Project
                 </button>
                 <p className="mt-4 text-[10px] text-slate-500 font-mono uppercase tracking-widest">
-                  Designed in Silicon Valley
+                  Designed in Bengaluru
                 </p>
               </motion.div>
 

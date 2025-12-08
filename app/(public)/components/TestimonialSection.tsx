@@ -18,12 +18,12 @@ export  const TestimonialSection = () => {
               </h2>
            </div>
            <div className="flex items-center gap-4">
-             {/* Placeholder Avatar */}
+             {/* CEO Avatar */}
              <div className="w-12 h-12 bg-slate-900 rounded-full overflow-hidden">
-                <img src="https://i.pravatar.cc/150?img=11" alt="CEO" className="w-full h-full object-cover" />
+                <img src="/images/kartik.png" alt="CEO Kartik" className="w-full h-full object-cover" />
              </div>
              <div>
-               <p className="font-bold text-lg text-slate-900">Karthik</p>
+               <p className="font-bold text-lg text-slate-900">Kartik</p>
                <p className="text-slate-500">CEO, Kirynex</p>
              </div>
            </div>
