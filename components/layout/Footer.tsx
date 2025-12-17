@@ -15,18 +15,24 @@ const CopyEmail = () => {
   const [copied, setCopied] = useState(false);
   const email = "kirynex1@gmail.com";
 
-  const handleCopy = () => {
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     navigator.clipboard.writeText(email);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <button 
-      onClick={handleCopy}
+    <a 
+      href={`mailto:${email}`}
       className="group flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-[#2563eb]/10 border border-white/10 hover:border-[#2563eb]/30 rounded-full transition-all duration-300"
     >
-      <div className="relative w-3.5 h-3.5 flex items-center justify-center">
+      <button
+        onClick={handleCopy}
+        className="relative w-3.5 h-3.5 flex items-center justify-center hover:scale-110 transition-transform"
+        aria-label="Copy email"
+      >
         <AnimatePresence mode='wait'>
           {copied ? (
             <motion.div
@@ -48,9 +54,9 @@ const CopyEmail = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </button>
       <span className="font-mono text-[10px] md:text-xs text-slate-300 group-hover:text-white transition-colors">{copied ? "Copied!" : email}</span>
-    </button>
+    </a>
   );
 };
 
@@ -93,11 +99,10 @@ export default function Footer() {
             {/* CENTER: Compact Nav */}
             <nav className="flex gap-6 md:gap-8 text-xs md:text-sm font-medium text-slate-400">
                 {[
-                    { label: 'Work', href: '#work' },
-                    { label: 'Services', href: '#services' },
+                    { label: 'Services', href: '/services' },
                     { label: 'Work Flow', href: '/work-flow' },
-                    { label: 'Technology', href: '#technology' },
-                    { label: 'Portfolio', href: '#portfolio' }
+                    { label: 'Technology', href: '/technology' },
+                    { label: 'Portfolio', href: '/portfolio' }
                 ].map((item) => (
                     <a key={item.label} href={item.href} className="hover:text-white hover:underline decoration-[#2563eb] underline-offset-4 transition-all">
                         {item.label}

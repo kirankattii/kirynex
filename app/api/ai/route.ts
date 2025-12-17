@@ -24,7 +24,9 @@ export async function POST(request: Request) {
 
     // Initialize Gemini
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API.trim());
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    
+    // Try gemini-2.5-flash first, fallback to gemini-1.5-flash if unavailable
+    const modelNames = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
 
     // Create a structured prompt for project analysis
     const systemPrompt = `You are an expert software architect and project consultant. Analyze the following software project concept and provide a detailed technical analysis in JSON format.
@@ -82,10 +84,34 @@ Important:
 - Return ONLY valid JSON, no markdown, no code blocks, no explanations`;
 
     console.log('Calling Gemini API for project analysis...');
+    console.log('Using model:', modelNames[0]);
 
-    const result = await model.generateContent(systemPrompt);
-    const response = await result.response;
-    const text = response.text();
+    let result;
+    let response;
+    let text;
+    
+    // Try the primary model first, with fallback to alternatives
+    let lastError;
+    for (const modelName of modelNames) {
+      try {
+        const currentModel = genAI.getGenerativeModel({ model: modelName });
+        console.log(`Attempting to use model: ${modelName}`);
+        result = await currentModel.generateContent(systemPrompt);
+        response = await result.response;
+        text = response.text();
+        console.log(`Successfully used model: ${modelName}`);
+        break; // Success, exit loop
+      } catch (modelError: any) {
+        console.warn(`Model ${modelName} failed:`, modelError.message);
+        lastError = modelError;
+        // Continue to next model
+      }
+    }
+    
+    // If all models failed, throw the last error
+    if (!text) {
+      throw lastError || new Error('All model attempts failed');
+    }
 
     // Extract JSON from response (handle cases where Gemini wraps it in markdown)
     let jsonText = text.trim();

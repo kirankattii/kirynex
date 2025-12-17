@@ -162,8 +162,12 @@ export default function Navbar() {
         {/* CTA & Mobile Toggle */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => router.push('/contact')}
-            className={`hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all hover:scale-105 shadow-md ${
+            onClick={() => {
+              const phoneNumber = "919108724443";
+              const message = encodeURIComponent("Hi! I'd like to discuss your services.");
+              window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+            }}
+            className={`hidden md:flex cursor-pointer items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all hover:scale-105 shadow-md ${
               isScrolled
                 ? "bg-[#0B1120] text-white hover:bg-blue-600"
                 : "bg-yellow-400 text-[#0B1120] hover:bg-white"

@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://kirynex.in
+
+# Sitemaps
+Sitemap: https://kirynex.in/sitemap.xml
