@@ -359,7 +359,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                               type="text"
                               value={formData.name}
                               onChange={(e) => handleChange('name', e.target.value)}
-                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all"
+                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                               placeholder="John Doe"
                             />
                           </div>
@@ -369,7 +369,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                               type="email"
                               value={formData.email}
                               onChange={(e) => handleChange('email', e.target.value)}
-                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all"
+                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                               placeholder="john@company.com"
                             />
                           </div>
@@ -379,7 +379,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                               type="tel"
                               value={formData.phone}
                               onChange={(e) => handleChange('phone', e.target.value)}
-                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all"
+                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                               placeholder="+1 (555) 000-0000"
                             />
                           </div>
@@ -389,7 +389,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                               type="text"
                               value={formData.company}
                               onChange={(e) => handleChange('company', e.target.value)}
-                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all"
+                              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-slate-900 placeholder:text-slate-400"
                               placeholder="Acme Inc."
                             />
                           </div>
