@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import {
  ArrowRight, Zap, Menu, X, Cpu, ArrowUpRight,
  Mail, MapPin, Send, MessageSquare, ChevronDown, Sparkles
@@ -395,9 +396,9 @@ export const ContactPage = () => {
                            <Sparkles className="mb-6 text-brand-yellow" size={32} />
                            <h3 className="text-2xl font-bold mb-2">Join the Team</h3>
                            <p className="text-blue-100 text-sm mb-6">We are looking for obsessive engineers and designers.</p>
-                           <button className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider hover:gap-3 transition-all">
+                           <Link href="/career" className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider hover:gap-3 transition-all cursor-pointer">
                                View Openings <ArrowRight size={16} />
-                           </button>
+                           </Link>
                        </div>
                    </FadeIn>
                </div>

@@ -180,7 +180,7 @@ export default function Navbar() {
           <button
             ref={menuButtonRef}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`md:hidden p-2 rounded-full transition-all active:scale-95 ${
+            className={`md:hidden p-2 rounded-full transition-all active:scale-95 cursor-pointer ${
               isScrolled 
                 ? "bg-slate-100 text-slate-900 hover:bg-slate-200" 
                 : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
@@ -277,7 +277,7 @@ export default function Navbar() {
                       }, 300);
                     }
                   }}
-                  className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-white/5 hover:border-white/20 transition-all text-center group"
+                  className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-white/5 hover:border-white/20 transition-all text-center group cursor-pointer"
                 >
                   <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                     <Zap size={16} />
@@ -302,7 +302,7 @@ export default function Navbar() {
                 variants={itemVariants}
                 className="px-6 pb-6 text-center"
               >
-                <button onClick={openModal} className="w-full py-4 bg-white text-[#0B1120] rounded-xl font-bold text-sm hover:bg-blue-50 transition-colors shadow-lg shadow-white/5">
+                <button onClick={openModal} className="w-full py-4 bg-white text-[#0B1120] rounded-xl font-bold text-sm hover:bg-blue-50 transition-colors shadow-lg shadow-white/5 cursor-pointer">
                   Start a Project
                 </button>
                 <p className="mt-4 text-[10px] text-slate-500 font-mono uppercase tracking-widest">

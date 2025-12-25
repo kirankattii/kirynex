@@ -37,7 +37,7 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({ children, classN
         onMouseLeave={handleMouseLeave}
         onClick={onClick}
         style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
-        className={`relative overflow-hidden transition-transform duration-200 ease-out ${className}`}
+        className={`relative overflow-hidden transition-transform duration-200 ease-out cursor-pointer ${className}`}
       >
         {children}
       </button>

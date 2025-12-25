@@ -315,7 +315,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                                 key={opt.id}
                                 type="button"
                                 onClick={() => handleChange('timeline', opt.id)}
-                                className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                                className={`px-4 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${
                                   formData.timeline === opt.id
                                     ? 'bg-brand-dark text-white border-brand-dark'
                                     : 'bg-white text-slate-600 border-slate-200 hover:border-brand-dark'
@@ -404,7 +404,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                       <button
                         type="button"
                         onClick={prevStep}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium"
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium cursor-pointer"
                       >
                         <ArrowLeft size={18} /> Back
                       </button>
@@ -417,7 +417,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                         type="button"
                         onClick={nextStep}
                         disabled={step === 1 && formData.service.length === 0}
-                        className="flex items-center gap-2 px-8 py-3 rounded-xl bg-brand-dark text-white font-bold hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-dark/20"
+                        className="flex items-center gap-2 px-8 py-3 rounded-xl bg-brand-dark text-white font-bold hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-lg shadow-brand-dark/20"
                       >
                         Next Step <ArrowRight size={18} />
                       </button>
@@ -425,7 +425,7 @@ export const ProjectInquiryModal: React.FC<ProjectInquiryModalProps> = ({
                       <button
                         type="submit"
                         disabled={isSubmitting || !formData.name || !formData.email}
-                        className="flex items-center gap-2 px-8 py-3 rounded-xl bg-brand-blue text-white font-bold hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-blue/30"
+                        className="flex items-center gap-2 px-8 py-3 rounded-xl bg-brand-blue text-white font-bold hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-lg shadow-brand-blue/30"
                       >
                         {isSubmitting ? (
                           <>

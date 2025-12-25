@@ -108,7 +108,7 @@ const LegacyDashboard = () => (
       <div className="flex-1 bg-white p-1.5 sm:p-2 md:p-4 relative overflow-y-auto">
         <div className="border border-slate-400 bg-slate-100 p-0.5 sm:p-1 mb-1.5 sm:mb-2 md:mb-4 flex justify-between items-center">
           <span className="font-bold truncate mr-1 sm:mr-2 text-[8px] sm:text-[9px]">DATA_VIEW</span>
-          <button className="bg-slate-300 border border-slate-500 px-1 sm:px-2 text-[7px] sm:text-[8px] md:text-[9px] active:bg-slate-400 whitespace-nowrap">EXPORT</button>
+          <button className="bg-slate-300 border border-slate-500 px-1 sm:px-2 text-[7px] sm:text-[8px] md:text-[9px] active:bg-slate-400 whitespace-nowrap cursor-pointer">EXPORT</button>
         </div>
 
         {/* Ugly Table */}

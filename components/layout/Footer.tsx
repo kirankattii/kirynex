@@ -30,7 +30,7 @@ const CopyEmail = () => {
     >
       <button
         onClick={handleCopy}
-        className="relative w-3.5 h-3.5 flex items-center justify-center hover:scale-110 transition-transform"
+        className="relative w-3.5 h-3.5 flex items-center justify-center hover:scale-110 transition-transform cursor-pointer"
         aria-label="Copy email"
       >
         <AnimatePresence mode='wait'>
@@ -97,12 +97,13 @@ export default function Footer() {
             </div>
 
             {/* CENTER: Compact Nav */}
-            <nav className="flex gap-6 md:gap-8 text-xs md:text-sm font-medium text-slate-400">
+            <nav className="flex flex-wrap gap-6 md:gap-8 text-xs md:text-sm font-medium text-slate-400">
                 {[
                     { label: 'Services', href: '/services' },
                     { label: 'Work Flow', href: '/work-flow' },
                     { label: 'Technology', href: '/technology' },
-                    { label: 'Portfolio', href: '/portfolio' }
+                    { label: 'Portfolio', href: '/portfolio' },
+                    { label: 'Career', href: '/career' }
                 ].map((item) => (
                     <a key={item.label} href={item.href} className="hover:text-white hover:underline decoration-[#2563eb] underline-offset-4 transition-all">
                         {item.label}

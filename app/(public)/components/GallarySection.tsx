@@ -224,7 +224,7 @@ export const GallarySection = () => {
                       <p className="text-slate-300 text-sm mb-6 line-clamp-2 md:line-clamp-none">
                         {project.desc}
                       </p>
-                      <button className="flex items-center gap-2 text-white font-bold uppercase tracking-widest text-xs group/btn">
+                      <button className="flex items-center gap-2 text-white font-bold uppercase tracking-widest text-xs group/btn cursor-pointer">
                         View Case Study <MoveRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                       </button>
                    </div>

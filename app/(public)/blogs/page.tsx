@@ -645,8 +645,8 @@ export default function BlogPage() {
                            </div>
                         </div>
                         <div className="flex gap-1 sm:gap-2">
-                          <button className="p-1.5 sm:p-2 text-slate-400 hover:text-brand-blue transition-colors"><Share2 size={18} className="sm:w-5 sm:h-5" /></button>
-                          <button className="p-1.5 sm:p-2 text-slate-400 hover:text-brand-blue transition-colors"><Bookmark size={18} className="sm:w-5 sm:h-5" /></button>
+                          <button className="p-1.5 sm:p-2 text-slate-400 hover:text-brand-blue transition-colors cursor-pointer"><Share2 size={18} className="sm:w-5 sm:h-5" /></button>
+                          <button className="p-1.5 sm:p-2 text-slate-400 hover:text-brand-blue transition-colors cursor-pointer"><Bookmark size={18} className="sm:w-5 sm:h-5" /></button>
                         </div>
                      </div>
                   </div>
@@ -840,7 +840,7 @@ export default function BlogPage() {
           </div>
           
           <div className="mt-12 md:mt-20 text-center px-4">
-            <button className="px-6 sm:px-10 py-3 sm:py-4 rounded-full border border-slate-200 font-bold text-sm sm:text-base text-slate-600 hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-all flex items-center gap-2 mx-auto">
+            <button className="px-6 sm:px-10 py-3 sm:py-4 rounded-full border border-slate-200 font-bold text-sm sm:text-base text-slate-600 hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-all flex items-center gap-2 mx-auto cursor-pointer">
               Load More Articles <ChevronRight size={14} className="sm:w-4 sm:h-4" />
             </button>
           </div>

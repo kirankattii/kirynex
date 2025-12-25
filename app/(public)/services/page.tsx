@@ -457,7 +457,7 @@ const ServicesPageOne: React.FC = () => {
        {['Services', 'Work', 'Process', 'About'].map((item) => (
            <a key={item} href="#" onClick={() => setMobileMenuOpen(false)} className="text-4xl font-bold text-white hover:text-brand-yellow transition-colors">{item}</a>
        ))}
-       <button onClick={() => { openModal(); setMobileMenuOpen(false); }} className="mt-8 px-8 py-4 bg-brand-blue text-white rounded-full font-bold text-lg">Start Project</button>
+       <button onClick={() => { openModal(); setMobileMenuOpen(false); }} className="mt-8 px-8 py-4 bg-brand-blue text-white rounded-full font-bold text-lg cursor-pointer">Start Project</button>
      </div>
 
 
