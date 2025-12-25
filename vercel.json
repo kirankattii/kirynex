@@ -1,10 +1,16 @@
 {
-    "redirects": [
-      {
-        "source": "https://www.kirynex.in/(.*)",
-        "destination": "https://kirynex.in/$1",
-        "permanent": true
-      }
-    ]
-  }
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.kirynex.in"
+        }
+      ],
+      "destination": "https://kirynex.in/$1",
+      "permanent": true
+    }
+  ]
+}
   
