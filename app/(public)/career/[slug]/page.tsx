@@ -3,10 +3,11 @@
 import React, { useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
- Check, ArrowLeft, Upload, FileText, Send
+ Check, ArrowLeft, Upload, FileText, Send, Share2, Linkedin, Twitter, Facebook, MessageCircle, Mail, Copy, CheckCircle2
 } from 'lucide-react';
 import { MagneticButton } from '@/components/ui/MagnaticButton';
 import { getJobBySlug } from '@/lib/jobs';
+import { SITE_URL } from '@/lib/constants';
 
 const JobDetailView = ({ job }: { job: NonNullable<ReturnType<typeof getJobBySlug>> }) => {
     const router = useRouter();
@@ -22,7 +23,100 @@ const JobDetailView = ({ job }: { job: NonNullable<ReturnType<typeof getJobBySlu
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState('');
+    const [showShareMenu, setShowShareMenu] = useState(false);
+    const [linkCopied, setLinkCopied] = useState(false);
+    const [hasNativeShare, setHasNativeShare] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const shareMenuRef = useRef<HTMLDivElement>(null);
+
+    // Get current page URL
+    const jobUrl = `${SITE_URL}/career/${job.slug}`;
+    const shareText = `Check out this ${job.title} position at Kirynex: ${job.title} - ${job.department}`;
+
+    // Check for native share support
+    React.useEffect(() => {
+        setHasNativeShare(typeof navigator !== 'undefined' && !!navigator.share);
+    }, []);
+
+    // Close share menu when clicking outside
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+                setShowShareMenu(false);
+            }
+        };
+
+        if (showShareMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showShareMenu]);
+
+    // Share functions
+    const shareToLinkedIn = () => {
+        const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(jobUrl)}`;
+        window.open(url, '_blank', 'width=600,height=400');
+        setShowShareMenu(false);
+    };
+
+    const shareToTwitter = () => {
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(jobUrl)}`;
+        window.open(url, '_blank', 'width=600,height=400');
+        setShowShareMenu(false);
+    };
+
+    const shareToFacebook = () => {
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(jobUrl)}`;
+        window.open(url, '_blank', 'width=600,height=400');
+        setShowShareMenu(false);
+    };
+
+    const shareToWhatsApp = () => {
+        const url = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${jobUrl}`)}`;
+        window.open(url, '_blank');
+        setShowShareMenu(false);
+    };
+
+    const shareViaEmail = () => {
+        const subject = encodeURIComponent(`${job.title} at Kirynex`);
+        const body = encodeURIComponent(`${shareText}\n\n${jobUrl}`);
+        const url = `mailto:?subject=${subject}&body=${body}`;
+        window.location.href = url;
+        setShowShareMenu(false);
+    };
+
+    const copyToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(jobUrl);
+            setLinkCopied(true);
+            setShowShareMenu(false);
+            setTimeout(() => setLinkCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
+    };
+
+    // Native Web Share API (for mobile)
+    const nativeShare = async () => {
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            try {
+                await navigator.share({
+                    title: job.title,
+                    text: shareText,
+                    url: jobUrl,
+                });
+                setShowShareMenu(false);
+            } catch (err) {
+                // User cancelled or error occurred
+                if ((err as Error).name !== 'AbortError') {
+                    console.error('Error sharing:', err);
+                }
+            }
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -121,13 +215,108 @@ const JobDetailView = ({ job }: { job: NonNullable<ReturnType<typeof getJobBySlu
         <div className="pt-24 md:pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-10 duration-700">
             {/* Header */}
             <div className="mb-8 md:mb-12">
-                <button 
-                    onClick={() => router.push('/career')}
-                    className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-6 md:mb-8 text-sm font-bold uppercase tracking-wider cursor-pointer"
-                >
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    Back to Openings
-                </button>
+                <div className="flex items-center justify-between mb-6 md:mb-8">
+                    <button 
+                        onClick={() => router.push('/career')}
+                        className="group flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold uppercase tracking-wider cursor-pointer"
+                    >
+                        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                        Back to Openings
+                    </button>
+                    
+                    {/* Share Button */}
+                    <div className="relative" ref={shareMenuRef}>
+                        <button
+                            onClick={() => setShowShareMenu(!showShareMenu)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-sm font-medium cursor-pointer"
+                        >
+                            <Share2 size={16} />
+                            <span className="hidden sm:inline">Share</span>
+                        </button>
+                        
+                        {showShareMenu && (
+                            <div className="absolute right-0 top-full mt-2 w-56 bg-[#0b0f19] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="p-2">
+                                    {/* Native Share (Mobile) */}
+                                    {hasNativeShare && (
+                                        <button
+                                            onClick={nativeShare}
+                                            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-left cursor-pointer"
+                                        >
+                                            <Share2 size={18} className="text-[#2563eb]" />
+                                            <span className="text-sm text-white font-medium">Share</span>
+                                        </button>
+                                    )}
+                                    
+                                    {/* Copy Link */}
+                                    <button
+                                        onClick={copyToClipboard}
+                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-left cursor-pointer"
+                                    >
+                                        {linkCopied ? (
+                                            <>
+                                                <CheckCircle2 size={18} className="text-green-500" />
+                                                <span className="text-sm text-white font-medium">Link Copied!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy size={18} className="text-[#2563eb]" />
+                                                <span className="text-sm text-white font-medium">Copy Link</span>
+                                            </>
+                                        )}
+                                    </button>
+                                    
+                                    <div className="h-px bg-white/10 my-1"></div>
+                                    
+                                    {/* LinkedIn */}
+                                    <button
+                                        onClick={shareToLinkedIn}
+                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-left cursor-pointer"
+                                    >
+                                        <Linkedin size={18} className="text-[#0a66c2]" />
+                                        <span className="text-sm text-white font-medium">LinkedIn</span>
+                                    </button>
+                                    
+                                    {/* Twitter */}
+                                    <button
+                                        onClick={shareToTwitter}
+                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-left cursor-pointer"
+                                    >
+                                        <Twitter size={18} className="text-[#1da1f2]" />
+                                        <span className="text-sm text-white font-medium">Twitter</span>
+                                    </button>
+                                    
+                                    {/* Facebook */}
+                                    <button
+                                        onClick={shareToFacebook}
+                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-left cursor-pointer"
+                                    >
+                                        <Facebook size={18} className="text-[#1877f2]" />
+                                        <span className="text-sm text-white font-medium">Facebook</span>
+                                    </button>
+                                    
+                                    {/* WhatsApp */}
+                                    <button
+                                        onClick={shareToWhatsApp}
+                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-left cursor-pointer"
+                                    >
+                                        <MessageCircle size={18} className="text-[#25d366]" />
+                                        <span className="text-sm text-white font-medium">WhatsApp</span>
+                                    </button>
+                                    
+                                    {/* Email */}
+                                    <button
+                                        onClick={shareViaEmail}
+                                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-left cursor-pointer"
+                                    >
+                                        <Mail size={18} className="text-[#2563eb]" />
+                                        <span className="text-sm text-white font-medium">Email</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
 
                 <div className="flex flex-wrap gap-3 md:gap-4 mb-4 md:mb-6">
                     <span className="px-3 py-1.5 rounded-full bg-[#2563eb]/20 border border-[#2563eb]/30 text-[#60a5fa] text-xs font-bold uppercase tracking-wider">

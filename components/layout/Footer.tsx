@@ -97,7 +97,7 @@ export default function Footer() {
             </div>
 
             {/* CENTER: Compact Nav */}
-            <nav className="flex flex-wrap gap-6 md:gap-8 text-xs md:text-sm font-medium text-slate-400">
+            <nav className="flex flex-wrap justify-center gap-6 md:gap-8 text-xs md:text-sm font-medium text-slate-400">
                 {[
                     { label: 'Services', href: '/services' },
                     { label: 'Work Flow', href: '/work-flow' },
