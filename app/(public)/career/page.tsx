@@ -9,6 +9,7 @@ import {
 import { useOnScreen } from '@/hooks/useOnScreen';
 import { MagneticButton } from '@/components/ui/MagnaticButton';
 import { JOBS } from '@/lib/jobs';
+import { SITE_URL } from '@/lib/constants';
 
 /* --- UTILS & HOOKS --- */
 
@@ -113,15 +114,15 @@ const CareerPage = () => {
    // Open Graph
    updateMetaTag('og:title', 'Careers at Kirynex - Join Our Team | IT Services Jobs', true);
    updateMetaTag('og:description', "Join Kirynex and build the future of tech. We're hiring Business Development Executives, IT Sales Executives, Digital Marketing Specialists, and more.", true);
-   updateMetaTag('og:url', 'https://kirynex.in/career', true);
+   updateMetaTag('og:url', `${SITE_URL}/career`, true);
    updateMetaTag('og:type', 'website', true);
-   updateMetaTag('og:image', 'https://kirynex.in/og-image.jpg', true);
+   updateMetaTag('og:image', `${SITE_URL}/og-image.jpg`, true);
    
    // Twitter Card
    updateMetaTag('twitter:card', 'summary_large_image');
    updateMetaTag('twitter:title', 'Careers at Kirynex - Join Our Team');
    updateMetaTag('twitter:description', "Join Kirynex and build the future of tech. We're hiring talented professionals for IT services, sales, and marketing roles.");
-   updateMetaTag('twitter:image', 'https://kirynex.in/og-image.jpg');
+   updateMetaTag('twitter:image', `${SITE_URL}/og-image.jpg`);
    
    // Canonical link
    let canonical = document.querySelector('link[rel="canonical"]');
@@ -130,7 +131,7 @@ const CareerPage = () => {
      canonical.setAttribute('rel', 'canonical');
      document.head.appendChild(canonical);
    }
-   canonical.setAttribute('href', 'https://kirynex.in/career');
+   canonical.setAttribute('href', `${SITE_URL}/career`);
  }, []);
 
  // SEO Structured Data (JSON-LD)
@@ -138,8 +139,8 @@ const CareerPage = () => {
    "@context": "https://schema.org",
    "@type": "Organization",
    "name": "Kirynex",
-   "url": "https://kirynex.in",
-   "logo": "https://kirynex.in/images/logo.png",
+   "url": SITE_URL,
+   "logo": `${SITE_URL}/images/logo.png`,
    "description": "Kirynex combines world-class engineering with Apple-level design aesthetics. We craft digital experiences that define brands.",
    "address": {
      "@type": "PostalAddress",
@@ -167,13 +168,13 @@ const CareerPage = () => {
        "@type": "ListItem",
        "position": 1,
        "name": "Home",
-       "item": "https://kirynex.in"
+       "item": SITE_URL
      },
      {
        "@type": "ListItem",
        "position": 2,
        "name": "Careers",
-       "item": "https://kirynex.in/career"
+       "item": `${SITE_URL}/career`
      }
    ]
  };
@@ -206,7 +207,7 @@ const CareerPage = () => {
                "@type": "JobPosting",
                "title": job.title,
                "description": job.description,
-               "url": `https://kirynex.in/career/${job.slug}`,
+               "url": `${SITE_URL}/career/${job.slug}`,
                "identifier": {
                  "@type": "PropertyValue",
                  "name": "Kirynex",
@@ -218,7 +219,7 @@ const CareerPage = () => {
                "hiringOrganization": {
                  "@type": "Organization",
                  "name": "Kirynex",
-                 "sameAs": "https://kirynex.in"
+                 "sameAs": SITE_URL
                },
                "jobLocation": {
                  "@type": "Place",

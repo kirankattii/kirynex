@@ -1,6 +1,6 @@
 /** next-sitemap.config.js */
 module.exports = {
-    siteUrl: 'https://kirynex.in',       // canonical domain
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://kirynex.in',       // canonical domain
     generateRobotsTxt: true,
     changefreq: 'daily',
     priority: 0.7,
